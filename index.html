@@ -1,33 +1,23 @@
-Je skvělé, že už tracker běží! Aby byl přehlednější, upravil jsem kód tak, aby sázky seřadil do tří samostatných tabulek podle ID (CHAIN-01, CHAIN-02, CHAIN-03). To ti umožní lépe sledovat progres každé konkrétní řady.
-
-Zkopíruj tento kód a nahraď jím celý obsah souboru index.html na GitHubu:
-
-HTML
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betano Strategy Tracker - Chains</title>
+    <title>Betano Strategy Tracker - 5 Chains</title>
     <style>
         :root { --betano: #f36f21; --dark: #1a1a1a; --success: #2e7d32; --danger: #d32f2f; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid var(--betano); }
-        h1 { color: var(--betano); text-align: center; text-transform: uppercase; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: var(--dark); color: white; padding: 20px; border-radius: 12px; text-align: center; }
-        .stat-val { font-size: 24px; font-weight: bold; color: var(--betano); display: block; }
-
-        .chain-section { margin-bottom: 40px; border: 1px solid #eee; border-radius: 10px; overflow: hidden; }
-        .chain-header { background: #eee; padding: 10px 20px; font-weight: bold; color: var(--dark); display: flex; justify-content: space-between; }
-        
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #666; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        
-        .status { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        h1 { color: var(--betano); text-align: center; text-transform: uppercase; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--dark); color: white; padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--betano); }
+        .stat-val { font-size: 22px; font-weight: bold; color: var(--betano); display: block; }
+        .chain-section { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff; }
+        .chain-header { background: #f8f9fa; padding: 12px 20px; font-weight: bold; color: var(--dark); display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #fafafa; padding: 10px; text-align: left; font-size: 11px; color: #777; text-transform: uppercase; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .status { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
         .WIN { background: #e8f5e9; color: var(--success); }
         .LOST { background: #ffebee; color: var(--danger); }
         .LIVE { background: #fff3e0; color: #ef6c00; }
@@ -36,35 +26,40 @@ HTML
 <body>
 
 <div class="container">
-    <h1>Strategic Betting Tracker</h1>
-
+    <h1>5-Chain Strategy Dashboard</h1>
     <div class="stats-grid">
-        <div class="stat-card"><span>Aktuální Bank</span><span class="stat-val" id="bank">1000.00 Kč</span></div>
-        <div class="stat-card"><span>Dnešní P/L</span><span class="stat-val" id="pl">0.00 Kč</span></div>
-        <div class="stat-card"><span>Aktivní riziko</span><span class="stat-val" id="risk">0.00 Kč</span></div>
+        <div class="stat-card"><span>Celkový Bank</span><span class="stat-val" id="bank">3000.00 Kč</span></div>
+        <div class="stat-card"><span>Aktuální P/L</span><span class="stat-val" id="pl">0.00 Kč</span></div>
+        <div class="stat-card"><span>Aktivní Sázky</span><span class="stat-val" id="risk">0.00 Kč</span></div>
+        <div class="stat-card"><span>Počet Chainů</span><span class="stat-val">5</span></div>
     </div>
-
     <div id="chainsContainer"></div>
 </div>
 
 <script>
     const betHistory = [
-        // DATA Z TVÝCH TIKETŮ
+        // CHAIN-01
         { id: "CHAIN-01", match: "St.Tenis: Olbrycht - Czerwinski", bet: 16.00, odd: 1.80, pl: 0, status: "LIVE" },
         { id: "CHAIN-01", match: "NHL: Florida - Tampa Bay", bet: 16.00, odd: 1.87, pl: 13.92, status: "WIN" },
-        
+        // CHAIN-02
         { id: "CHAIN-02", match: "NBA: Philadelphia +15.5", bet: 78.00, odd: 1.90, pl: 0, status: "LIVE" },
         { id: "CHAIN-02", match: "Fotbal: Sunderland - Leeds", bet: 36.00, odd: 1.83, pl: -36.00, status: "LOST" },
         { id: "CHAIN-02", match: "NHL: Toronto - Ottawa", bet: 17.00, odd: 1.75, pl: -17.00, status: "LOST" },
-        
+        // CHAIN-03
         { id: "CHAIN-03", match: "NBA: Toronto +4.5", bet: 15.00, odd: 1.91, pl: 0, status: "LIVE" },
         { id: "CHAIN-03", match: "Fotbal: Casa Pia - Guimaraes", bet: 15.00, odd: 1.78, pl: 11.70, status: "WIN" },
-        { id: "CHAIN-03", match: "NHL: Winnipeg - Minnesota", bet: 15.00, odd: 1.85, pl: 12.75, status: "WIN" }
+        { id: "CHAIN-03", match: "NHL: Winnipeg - Minnesota", bet: 15.00, odd: 1.85, pl: 12.75, status: "WIN" },
+        // CHAIN-04
+        { id: "CHAIN-04", match: "NBA: Portland +6.5", bet: 15.00, odd: 1.95, pl: 0, status: "LIVE" },
+        // CHAIN-05
+        { id: "CHAIN-05", match: "St. Tenis: Gluszek - Kesic", bet: 15.00, odd: 1.70, pl: 0, status: "LIVE" }
     ];
+
+    const initialBank = 3000.00;
 
     function renderChains() {
         const container = document.getElementById('chainsContainer');
-        const chains = ["CHAIN-01", "CHAIN-02", "CHAIN-03"];
+        const chains = ["CHAIN-01", "CHAIN-02", "CHAIN-03", "CHAIN-04", "CHAIN-05"];
         let totalPL = 0;
         let totalRisk = 0;
 
@@ -72,40 +67,17 @@ HTML
             const chainBets = betHistory.filter(b => b.id === chainId);
             const chainPL = chainBets.reduce((sum, b) => sum + b.pl, 0);
             totalPL += chainPL;
-            
             const rows = chainBets.map(b => {
-                if(b.status === 'LIVE') totalRisk += b.bet;
-                return `
-                    <tr>
-                        <td>${b.match}</td>
-                        <td>${b.bet.toFixed(2)} Kč</td>
-                        <td>${b.odd.toFixed(2)}</td>
-                        <td><span class="status ${b.status}">${b.status === 'LIVE' ? 'Probíhá' : b.pl.toFixed(2) + ' Kč'}</span></td>
-                    </tr>
-                `;
+                if(b.status === 'LIVE' && b.bet > 0) totalRisk += b.bet;
+                return `<tr><td>${b.match}</td><td>${b.bet.toFixed(2)} Kč</td><td>${b.odd.toFixed(2)}</td><td><span class="status ${b.status}">${b.status === 'LIVE' ? 'Probíhá' : b.pl.toFixed(2) + ' Kč'}</span></td></tr>`;
             }).join('');
-
-            return `
-                <div class="chain-section">
-                    <div class="chain-header">
-                        <span>${chainId}</span>
-                        <span>Profit: ${chainPL.toFixed(2)} Kč</span>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr><th>Zápas</th><th>Vklad</th><th>Kurz</th><th>Výsledek</th></tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>
-            `;
+            return `<div class="chain-section"><div class="chain-header"><span>${chainId}</span><span style="color:${chainPL >= 0 ? 'green' : 'red'}">Profit: ${chainPL.toFixed(2)} Kč</span></div><table><thead><tr><th>Zápas</th><th>Vklad</th><th>Kurz</th><th>Status/PL</th></tr></thead><tbody>${rows}</tbody></table></div>`;
         }).join('');
 
-        document.getElementById('bank').innerText = (1000 + totalPL).toFixed(2) + " Kč";
-        document.getElementById('pl').innerText = totalPL.toFixed(2) + " Kč";
+        document.getElementById('bank').innerText = (initialBank + totalPL).toFixed(2) + " Kč";
+        document.getElementById('pl').innerText = (totalPL >= 0 ? "+" : "") + totalPL.toFixed(2) + " Kč";
         document.getElementById('risk').innerText = totalRisk.toFixed(2) + " Kč";
     }
-
     window.onload = renderChains;
 </script>
 </body>
