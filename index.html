@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Betano Strategy Tracker v3.0</title>
+    <style>
+        :root { --betano-orange: #f36f21; --dark: #1a1a1a; --success: #2e7d32; --danger: #d32f2f; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: var(--betano-orange); text-align: center; border-bottom: 2px solid var(--betano-orange); padding-bottom: 10px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--dark); color: white; padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-val { font-size: 20px; font-weight: bold; color: var(--betano-orange); display: block; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #eee; padding: 12px; text-align: left; font-size: 12px; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-download { background: var(--success); color: white; float: right; margin-bottom: 10px; }
+        .btn-download:hover { background: #1b5e20; }
+        
+        .history-section { margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Betano Strategy Control & Archive</h1>
+
+    <div class="stats-grid">
+        <div class="stat-card"><span>Aktuální Bank</span><span class="stat-val" id="bank">1010.67 Kč</span></div>
+        <div class="stat-card"><span>Dnešní P/L</span><span class="stat-val" id="todayPL">+10.67 Kč</span></div>
+        <div class="stat-card"><span>Aktivní řetězce</span><span class="stat-val">3</span></div>
+        <div class="stat-card"><span>Status</span><span class="stat-val">Čeká na 20:00</span></div>
+    </div>
+
+    <button class="btn btn-download" onclick="downloadCSV()">Stáhnout historii (CSV)</button>
+
+    <h3>Aktivní sázky (Odpolední okno)</h3>
+    <table id="activeBets">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Zápas</th>
+                <th>Tým</th>
+                <th>Vklad</th>
+                <th>Kurz</th>
+                <th>Výsledek</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>CHAIN-02</td>
+                <td>Sunderland - Leeds</td>
+                <td>Sunderland</td>
+                <td>36 Kč</td>
+                <td>1.83</td>
+                <td style="color:var(--danger)">Prohra (0:1)</td>
+            </tr>
+            <tr>
+                <td>CHAIN-03</td>
+                <td>Casa Pia - Guimaraes</td>
+                <td>Guimaraes</td>
+                <td>15 Kč</td>
+                <td>1.78</td>
+                <td style="color:var(--success)">Výhra (0:1)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="history-section">
+        <h3>Historie sázek (Archiv)</h3>
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>ID</th>
+                    <th>Zápas</th>
+                    <th>Vklad</th>
+                    <th>Kurz</th>
+                    <th>P/L</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Ukázková data (v reálném nasazení se načítají z localStorage)
+    const betHistory = [
+        { date: "2025-12-28", id: "CHAIN-02", match: "Sunderland - Leeds", bet: 36, odd: 1.83, pl: -36 },
+        { date: "2025-12-28", id: "CHAIN-03", match: "Casa Pia - Guimaraes", bet: 15, odd: 1.78, pl: 11.7 },
+        { date: "2025-12-27", id: "CHAIN-01", match: "Florida - Tampa Bay", bet: 16, odd: 1.87, pl: 13.92 }
+    ];
+
+    function renderHistory() {
+        const body = document.getElementById('historyBody');
+        body.innerHTML = betHistory.map(row => `
+            <tr>
+                <td>${row.date}</td>
+                <td>${row.id}</td>
+                <td>${row.match}</td>
+                <td>${row.bet} Kč</td>
+                <td>${row.odd}</td>
+                <td style="color:${row.pl >= 0 ? 'green' : 'red'}">${row.pl.toFixed(2)} Kč</td>
+            </tr>
+        `).join('');
+    }
+
+    function downloadCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Datum;ID;Zapas;Vklad;Kurz;Zisk_Ztrata\n";
+        
+        betHistory.forEach(row => {
+            csvContent += `${row.date};${row.id};${row.match};${row.bet};${row.odd};${row.pl}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "betano_historie_" + new Date().toISOString().slice(0,10) + ".csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    renderHistory();
+</script>
+</body>
+</html>
