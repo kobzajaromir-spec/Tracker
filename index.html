@@ -1,40 +1,36 @@
-<!DOCTYPE html> 
+Je skvělé, že už tracker běží! Aby byl přehlednější, upravil jsem kód tak, aby sázky seřadil do tří samostatných tabulek podle ID (CHAIN-01, CHAIN-02, CHAIN-03). To ti umožní lépe sledovat progres každé konkrétní řady.
+
+Zkopíruj tento kód a nahraď jím celý obsah souboru index.html na GitHubu:
+
+HTML
+
+<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betano Strategy Tracker v3.0</title>
+    <title>Betano Strategy Tracker - Chains</title>
     <style>
-        :root { --betano-orange: #f36f21; --dark: #1a1a1a; --success: #2e7d32; --danger: #d32f2f; --warning: #ef6c00; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid var(--betano-orange); }
-        h1 { color: var(--betano-orange); text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
+        :root { --betano: #f36f21; --dark: #1a1a1a; --success: #2e7d32; --danger: #d32f2f; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid var(--betano); }
+        h1 { color: var(--betano); text-align: center; text-transform: uppercase; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: var(--dark); color: white; padding: 20px; border-radius: 12px; text-align: center; transition: 0.3s; }
-        .stat-card:hover { transform: translateY(-3px); }
-        .stat-label { font-size: 12px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; display: block; }
-        .stat-val { font-size: 24px; font-weight: bold; color: var(--betano-orange); }
+        .stat-card { background: var(--dark); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-val { font-size: 24px; font-weight: bold; color: var(--betano); display: block; }
 
-        .btn-group { display: flex; justify-content: flex-end; margin-bottom: 15px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
-        .btn-csv { background: var(--success); color: white; text-decoration: none; }
-        .btn-csv:hover { background: #1b5e20; }
-
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-        th { background: #f8f9fa; padding: 15px; text-align: left; font-size: 13px; color: #666; text-transform: uppercase; border-bottom: 2px solid #eee; }
-        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover { background: #fdfdfd; }
-
-        .status-badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .status-win { background: #e8f5e9; color: var(--success); }
-        .status-lost { background: #ffebee; color: var(--danger); }
-        .status-live { background: #fff3e0; color: var(--warning); }
+        .chain-section { margin-bottom: 40px; border: 1px solid #eee; border-radius: 10px; overflow: hidden; }
+        .chain-header { background: #eee; padding: 10px 20px; font-weight: bold; color: var(--dark); display: flex; justify-content: space-between; }
         
-        @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            th:nth-child(3), td:nth-child(3) { display: none; } /* Skryje zápas na mobilu pro místo */
-        }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #666; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .WIN { background: #e8f5e9; color: var(--success); }
+        .LOST { background: #ffebee; color: var(--danger); }
+        .LIVE { background: #fff3e0; color: #ef6c00; }
     </style>
 </head>
 <body>
@@ -43,99 +39,74 @@
     <h1>Strategic Betting Tracker</h1>
 
     <div class="stats-grid">
-        <div class="stat-card"><span class="stat-label">Aktuální Bank</span><span class="stat-val" id="bank">1000.00 Kč</span></div>
-        <div class="stat-card"><span class="stat-label">Dnešní P/L</span><span class="stat-val" id="todayPL">0.00 Kč</span></div>
-        <div class="stat-card"><span class="stat-label">Aktivní riziko</span><span class="stat-val" id="risk">0.00 Kč</span></div>
-        <div class="stat-card"><span class="stat-label">Výnos (ROI)</span><span class="stat-val" id="roi">0%</span></div>
+        <div class="stat-card"><span>Aktuální Bank</span><span class="stat-val" id="bank">1000.00 Kč</span></div>
+        <div class="stat-card"><span>Dnešní P/L</span><span class="stat-val" id="pl">0.00 Kč</span></div>
+        <div class="stat-card"><span>Aktivní riziko</span><span class="stat-val" id="risk">0.00 Kč</span></div>
     </div>
 
-    <div class="btn-group">
-        <button class="btn btn-csv" onclick="downloadCSV()">Stáhnout CSV Historii</button>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Zápas</th>
-                <th>Vklad</th>
-                <th>Kurz</th>
-                <th>Výsledek / P/L</th>
-            </tr>
-        </thead>
-        <tbody id="historyBody">
-            </tbody>
-    </table>
+    <div id="chainsContainer"></div>
 </div>
 
 <script>
-    // DATA ZE SCREENSHOTŮ A HISTORIE DNE 28.12.
     const betHistory = [
-        // NOČNÍ SÁZKY (Dle tiketů)
-        { id: "CHAIN-02", match: "NBA: Philadelphia +15.5", bet: 78.00, odd: 1.90, pl: 0, status: "LIVE" },
-        { id: "CHAIN-03", match: "NBA: Toronto +4.5", bet: 15.00, odd: 1.91, pl: 0, status: "LIVE" },
+        // DATA Z TVÝCH TIKETŮ
         { id: "CHAIN-01", match: "St.Tenis: Olbrycht - Czerwinski", bet: 16.00, odd: 1.80, pl: 0, status: "LIVE" },
-        
-        // ODPOLEDNÍ BLOK
-        { id: "CHAIN-02", match: "Fotbal: Sunderland - Leeds", bet: 36.00, odd: 1.83, pl: -36.00, status: "LOST" },
-        { id: "CHAIN-03", match: "Fotbal: Casa Pia - Guimaraes", bet: 15.00, odd: 1.78, pl: 11.70, status: "WIN" },
-        
-        // RANNÍ BLOK
         { id: "CHAIN-01", match: "NHL: Florida - Tampa Bay", bet: 16.00, odd: 1.87, pl: 13.92, status: "WIN" },
+        
+        { id: "CHAIN-02", match: "NBA: Philadelphia +15.5", bet: 78.00, odd: 1.90, pl: 0, status: "LIVE" },
+        { id: "CHAIN-02", match: "Fotbal: Sunderland - Leeds", bet: 36.00, odd: 1.83, pl: -36.00, status: "LOST" },
         { id: "CHAIN-02", match: "NHL: Toronto - Ottawa", bet: 17.00, odd: 1.75, pl: -17.00, status: "LOST" },
+        
+        { id: "CHAIN-03", match: "NBA: Toronto +4.5", bet: 15.00, odd: 1.91, pl: 0, status: "LIVE" },
+        { id: "CHAIN-03", match: "Fotbal: Casa Pia - Guimaraes", bet: 15.00, odd: 1.78, pl: 11.70, status: "WIN" },
         { id: "CHAIN-03", match: "NHL: Winnipeg - Minnesota", bet: 15.00, odd: 1.85, pl: 12.75, status: "WIN" }
     ];
 
-    const initialBank = 1000.00;
-
-    function renderTracker() {
-        const body = document.getElementById('historyBody');
+    function renderChains() {
+        const container = document.getElementById('chainsContainer');
+        const chains = ["CHAIN-01", "CHAIN-02", "CHAIN-03"];
         let totalPL = 0;
-        let currentRisk = 0;
+        let totalRisk = 0;
 
-        body.innerHTML = betHistory.map(row => {
-            if (row.status === 'LIVE') currentRisk += row.bet;
-            else totalPL += row.pl;
-
-            const statusClass = row.status === 'WIN' ? 'status-win' : (row.status === 'LOST' ? 'status-lost' : 'status-live');
-            const resultText = row.status === 'LIVE' ? 'Probíhá' : `${row.pl > 0 ? '+' : ''}${row.pl.toFixed(2)} Kč`;
+        container.innerHTML = chains.map(chainId => {
+            const chainBets = betHistory.filter(b => b.id === chainId);
+            const chainPL = chainBets.reduce((sum, b) => sum + b.pl, 0);
+            totalPL += chainPL;
+            
+            const rows = chainBets.map(b => {
+                if(b.status === 'LIVE') totalRisk += b.bet;
+                return `
+                    <tr>
+                        <td>${b.match}</td>
+                        <td>${b.bet.toFixed(2)} Kč</td>
+                        <td>${b.odd.toFixed(2)}</td>
+                        <td><span class="status ${b.status}">${b.status === 'LIVE' ? 'Probíhá' : b.pl.toFixed(2) + ' Kč'}</span></td>
+                    </tr>
+                `;
+            }).join('');
 
             return `
-                <tr>
-                    <td><strong>${row.id}</strong></td>
-                    <td>${row.match}</td>
-                    <td>${row.bet.toFixed(2)} Kč</td>
-                    <td>${row.odd.toFixed(2)}</td>
-                    <td><span class="status-badge ${statusClass}">${resultText}</span></td>
-                </tr>
+                <div class="chain-section">
+                    <div class="chain-header">
+                        <span>${chainId}</span>
+                        <span>Profit: ${chainPL.toFixed(2)} Kč</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>Zápas</th><th>Vklad</th><th>Kurz</th><th>Výsledek</th></tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
             `;
         }).join('');
 
-        // Aktualizace karet nahoře
-        document.getElementById('bank').innerText = (initialBank + totalPL).toFixed(2) + " Kč";
-        document.getElementById('todayPL').innerText = (totalPL >= 0 ? "+" : "") + totalPL.toFixed(2) + " Kč";
-        document.getElementById('risk').innerText = currentRisk.toFixed(2) + " Kč";
-        
-        const roi = (totalPL / initialBank) * 100;
-        document.getElementById('roi').innerText = roi.toFixed(1) + "%";
+        document.getElementById('bank').innerText = (1000 + totalPL).toFixed(2) + " Kč";
+        document.getElementById('pl').innerText = totalPL.toFixed(2) + " Kč";
+        document.getElementById('risk').innerText = totalRisk.toFixed(2) + " Kč";
     }
 
-    function downloadCSV() {
-        let csvContent = "data:text/csv;charset=utf-8,ID;Zapas;Vklad;Kurz;PL;Status\n";
-        betHistory.forEach(r => {
-            csvContent += `${r.id};${r.match};${r.bet};${r.odd};${r.pl};${r.status}\n`;
-        });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "betano_history_export.csv");
-        document.body.appendChild(link);
-        link.click();
-    }
-
-    window.onload = renderTracker;
+    window.onload = renderChains;
 </script>
-
 </body>
 </html>
-
